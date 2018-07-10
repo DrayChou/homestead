@@ -22,7 +22,7 @@ fi
 block="server {
     listen ${3:-80};
     listen ${4:-443} ssl http2;
-    server_name .$1;
+    server_name $1;
     root \"$2\";
 
     index index.html index.htm index.php;
@@ -30,10 +30,9 @@ block="server {
     charset utf-8;
 
     location / {
+        rewrite ^/admin.php.*$ /admin.php;
         try_files \$uri \$uri/ /index.php?\$query_string;
     }
-
-    $configureZray
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location = /robots.txt  { access_log off; log_not_found off; }
@@ -64,6 +63,8 @@ block="server {
     location ~ /\.ht {
         deny all;
     }
+
+    $configureZray
 
     ssl_certificate     /etc/nginx/ssl/$1.crt;
     ssl_certificate_key /etc/nginx/ssl/$1.key;
